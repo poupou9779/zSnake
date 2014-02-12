@@ -18,8 +18,9 @@
 #define BACKGROUND 0x00ADD289
 
 /*const path defines*/
-#define PATH_TILESET "data\\T.bmp"
+#define PATH_TILESET "data\\T2.bmp"
 #define PATH_MENU    "data\\Menu.bmp"
+#define PATH_PAUSE   "data\\PAUSE.bmp"
 #define PATH_LEVELS  "data\\Levels.txt"
 #define PATH_MUSIC   "data\\BMusic.wav"
 #define PATH_EAT     "data\\eat.wav"
@@ -77,7 +78,8 @@ game_t;
 typedef struct
 {
     /*explicit*/
-	SDL_Surface *screen;
+	SDL_Surface *screen,
+                *pause;
 	tileset_t tileset;
         /*number of levels, thus length of 'game'*/
 	int nlevels,
@@ -128,4 +130,6 @@ void BlitAll(context_t *ctxt, int level);
 /*called by BlitAll and blits "score:%3d", score*/
 void BlitScore(context_t *ctxt, int level);
 
+/*called in Play to load the pause surface*/
+SDL_Surface *SDL_LoadBMPAlpha(const char *path, Uint8 alpha);
 #endif

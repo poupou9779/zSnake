@@ -65,8 +65,7 @@ void InitContext(context_t *ctxt)
     }
     fclose(levels);
     ctxt->screen = NULL;
-    /*the user has 3 lives for the whole game*/
-    ctxt->lives = 3;
+    ctxt->pause = SDL_LoadBMPAlpha(PATH_PAUSE, 128);
     InitMusics(ctxt);
 }
 
@@ -176,6 +175,22 @@ void PrepareGame(context_t *ctxt, int level)
                ctxt->game[level].board[i*ctxt->game[level].X + j] = EMPTY;
 }
 
+SDL_Surface *SDL_LoadBMPAlpha(const char *path, Uint8 alpha)
+{
+    SDL_Surface *ret = SDL_LoadBMP(path);
+    if(ret == NULL)
+    {
+        fprintf(stderr, "Unable to load ret : %s\n", SDL_GetError());
+        exit(EXIT_FAILURE);
+    }
+    if(SDL_SetAlpha(ret, SDL_SRCALPHA, alpha) == -1)
+    {
+        fprintf(stderr, "Unable to set alpha to ret : %s\n", SDL_GetError());
+        exit(EXIT_FAILURE);
+    }
+    return ret;
+}
+
 int Play(context_t *ctxt, int level)
 {
     SDL_Event e;
@@ -185,9 +200,10 @@ int Play(context_t *ctxt, int level)
     /*if this was the last level*/
     if(level == ctxt->nlevels)
         return 1;
+    SDL_WM_SetCaption(NAME_GAME, NULL);
     /*resets the score, because the old one will be added to the current one in the end*/
     ctxt->points = 0;
-    do
+    while(ctxt->lives > 0)
     {
         /*resets the settings before each life*/
         PrepareGame(ctxt, level);
@@ -206,6 +222,24 @@ int Play(context_t *ctxt, int level)
                     ctxt->snake.head.y+moveY[e.key.keysym.sym-SDLK_UP]*HEIGHT_SPRITE == ctxt->snake.body[0].y))
                 /*then update the current direction*/
                 ctxt->snake.direction = (int)(e.key.keysym.sym - SDLK_UP);
+            else if(e.type == SDL_KEYDOWN && e.key.keysym.sym == SDLK_p)
+            {
+                SDL_Rect dst;
+                dst.w = ctxt->pause->w;
+                dst.h = ctxt->pause->h;
+                dst.x = (ctxt->screen->w - dst.w)/2;
+                dst.y = (ctxt->screen->h - dst.h)/2;
+                SDL_BlitSurface(ctxt->pause, NULL, ctxt->screen, &dst);
+                SDL_Flip(ctxt->screen);
+                do
+                    SDL_WaitEvent(&e);
+                while(e.type != SDL_KEYDOWN && e.key.keysym.sym != SDLK_RETURN);
+            }
+            else if(e.type == SDL_KEYDOWN && e.key.keysym.sym == SDLK_ESCAPE)
+            {
+                ctxt->lives = 0;
+                _loop = SDL_FALSE;
+            }
             /*currtime and lasttime are used to get the program to sleep while it is not used*/
             currtime = SDL_GetTicks();
             /*if the snake has not moved for quite some times*/
@@ -235,8 +269,8 @@ int Play(context_t *ctxt, int level)
         else
             /*if(the snake has eaten maxpoints apples, return points*level² + points of the next level*/
             break;
-    }while(ctxt->lives > 0);
-    return ctxt->points*(level+1)*(level+1) + Play(ctxt, level+1);
+    }
+    return ctxt->points + Play(ctxt, level+1);
 }
 
 void GenApple(context_t *ctxt, int level)

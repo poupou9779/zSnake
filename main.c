@@ -35,13 +35,12 @@ int main(int ac, char **av)
         /*if user presses PLAY (1)*/
         if(m == PLAY)
         {
+            /*the user has 3 lives for the whome game*/
+            ctxt.lives = 3;
             /*Play the game, and change the title with the user's result ex : 931 points !*/
             result = Play(&ctxt, 0);
             sprintf(title, "%d points !", result);
             SDL_WM_SetCaption(title, NULL);
-            /*Wait a second with the score as title, then sets the normal title back*/
-            SDL_Delay(1000);
-            SDL_WM_SetCaption(NAME_GAME, NULL);
         }
     }
     while(m != QUIT);
