@@ -1,7 +1,7 @@
 #ifndef DEF_H
 
-#include <SDL.h>
-#include <SDL_mixer.h>
+#include <SDL/SDL.h>
+#include <SDL/SDL_mixer.h>
 
 /*Used because SDL uses Sint16 type very much, then 20 warnings are set (int <-> Sint16)*/
 #pragma GCC diagnostic ignored "-Wconversion"
@@ -21,6 +21,8 @@
 #define PATH_TILESET "data\\T2.bmp"
 #define PATH_MENU    "data\\Menu.bmp"
 #define PATH_PAUSE   "data\\PAUSE.bmp"
+#define PATH_ICONBMP "data\\icon.bmp"
+#define PATH_ICONICO "data\\icon.ico"
 #define PATH_LEVELS  "data\\Levels.txt"
 #define PATH_MUSIC   "data\\BMusic.wav"
 #define PATH_EAT     "data\\eat.wav"

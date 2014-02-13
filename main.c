@@ -1,5 +1,5 @@
-#include <SDL.h>
-#include <SDL_mixer.h>
+#include <SDL/SDL.h>
+#include <SDL/SDL_mixer.h>
 #include "def.h"
 #include <time.h>
 
@@ -27,6 +27,7 @@ int main(int ac, char **av)
     srand((unsigned int)time(NULL));
     /*Set Title of the window*/
     SDL_WM_SetCaption(NAME_GAME, NULL);
+    SDL_WM_SetIcon(SDL_LoadBMP(PATH_ICONBMP), NULL);
     InitContext(&ctxt);
     Mix_PlayMusic(ctxt.music, -1);
     do
